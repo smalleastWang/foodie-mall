@@ -2,6 +2,8 @@ package com.smalleast.controller;
 
 import com.smalleast.base.Response;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -12,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 
 @RestController
+@RequestMapping(value = "hello")
 public class Hello {
 
-    @GetMapping("hello")
+    @GetMapping("")
     public Response hello() {
-        return Response.success("asdas");
+        return Response.success();
     }
 }
