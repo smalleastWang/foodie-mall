@@ -1,3 +1,2 @@
-com\smalleast\Application.class
-com\smalleast\controller\User.class
-com\smalleast\controller\Banner.class
+com/smalleast/controller/Banner.class
+com/smalleast/controller/User.class
