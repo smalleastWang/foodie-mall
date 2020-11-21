@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!-- 导入配置文件 -->
+    <classPathEntry location="C:/Users/96373/.m2/repository/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar" />
+    <context id="MysqlContext" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <!-- 通用mapper目录 -->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.smalleast.my.mapper.MyMapper"/>
+        </plugin>
+        <!-- optional，旨在创建class时，对注释进行控制 -->
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!--jdbc的数据库连接 -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/foodie-mall?serverTimezone=GMT%2B8&amp;useSSL=false&amp;characterEncoding=UTF-8"
+                        userId="root"
+                        password="SmallEast1022.">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+        <!--指定生成的类型为java类型，避免数据库中number等类型字段 -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!--自动生成的实体的存放包路径 -->
+        <javaModelGenerator targetPackage="com.smalleast.pojo" targetProject="src/main/java">
+            <property name="enableSubPackages"  value="true"/>
+            <property name="trimStrings"  value="true"/>
+        </javaModelGenerator>
+
+        <!--自动生成的*Mapper.xml文件存放路径 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="../foodie-mall-mapper/src/main/resources">
+            <property name="enableSubPackages"  value="true"/>
+        </sqlMapGenerator>
+
+        <!--自动生成的*Mapper.java存放路径 -->
+        <javaClientGenerator type="mapper" targetPackage="com.smalleast.mapper" targetProject="../foodie-mall-mapper/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!-- 用户表 -->
+        <table tableName="users" domainObjectName="Users"
+                enableCountByExample="false" enableUpdateByExample="false"
+                enableDeleteByExample="false" enableSelectByExample="false"
+                selectByExampleQueryId="false">
+<!--            <generatedKey column="ID" sqlStatement="select uuid_short()" identity="false"/>-->
+        </table>
+        <!-- 轮播图 -->
+        <table tableName="carouse" domainObjectName="Carouse">
+            <generatedKey column="ID" sqlStatement="select uuid_short()" identity="false"/>
+        </table>
+        <!-- 轮播图 -->
+        <table tableName="category" domainObjectName="Category" />
+        <!-- 用户地址 -->
+        <table tableName="user_address" domainObjectName="UserAddress" />
+        <!-- 商品表 -->
+        <table tableName="items" domainObjectName="Items" />
+        <!-- 商品图片表 -->
+        <table tableName="items_img" domainObjectName="ItemsImg" />
+        <!-- 商品规格 -->
+        <table tableName="items_spec" domainObjectName="ItemsSpec" />
+        <!-- 商品参数 -->
+        <table tableName="items_param" domainObjectName="ItemsParam" />
+        <!-- 商品评价 -->
+        <table tableName="items_comments" domainObjectName="ItemsComments" />
+        <!-- 订单表 -->
+        <table tableName="orders" domainObjectName="Orders" />
+        <!-- 商品关联关系表 -->
+        <table tableName="order_items" domainObjectName="OrderItems" />
+        <!-- 订单状态 -->
+        <table tableName="order_status" domainObjectName="OrderStatus" />
+
+    </context>
+</generatorConfiguration>

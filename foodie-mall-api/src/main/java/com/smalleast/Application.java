@@ -2,6 +2,7 @@ package com.smalleast;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import tk.mybatis.spring.annotation.MapperScan;
 
 /**
  * @Author : wangxiaodong
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  **/
 
 @SpringBootApplication
+@MapperScan(basePackages = "com.smalleast.mapper")
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
