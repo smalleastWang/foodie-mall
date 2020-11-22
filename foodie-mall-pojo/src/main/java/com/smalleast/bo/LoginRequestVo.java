@@ -1,4 +1,4 @@
-package com.smalleast.user;
+package com.smalleast.bo;
 
 import lombok.Getter;
 import lombok.Setter;

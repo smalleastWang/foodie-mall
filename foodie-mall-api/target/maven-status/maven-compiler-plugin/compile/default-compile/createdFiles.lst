@@ -1,2 +1,3 @@
+com\smalleast\Application.class
+com\smalleast\config\SwaggerConfig.class
 com\smalleast\controller\UserController.class
-com\smalleast\controller\Banner.class

@@ -1,7 +1,7 @@
 package com.smalleast.mapper;
 
-import com.smalleast.my.mapper.MyMapper;
+import com.smalleast.BaseMapper;
 import com.smalleast.pojo.ItemsImg;
 
-public interface ItemsImgMapper extends MyMapper<ItemsImg> {
+public interface ItemsImgMapper extends BaseMapper<ItemsImg> {
 }

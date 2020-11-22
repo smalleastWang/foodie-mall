@@ -2,6 +2,7 @@ package com.smalleast;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
@@ -13,6 +14,8 @@ import tk.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @MapperScan(basePackages = "com.smalleast.mapper")
+// 扫描所有包和相关组件包 org.n3r.idworker.Sid (不能写启动类所在包会导致配置无效)
+@ComponentScan(basePackages = {"org.n3r.idworker"})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

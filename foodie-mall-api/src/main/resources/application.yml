@@ -2,8 +2,6 @@
 logging:
   config: classpath:log4j2.yml
 
-
-
 ############################################################
 #
 # 配置数据源信息
@@ -42,6 +40,6 @@ mybatis:
 ############################################################
 # 通用 Mapper 配置
 mapper:
-mappers: com.imooc.my.mapper.MyMapper
-not-empty: false
-identity: MYSQL
+  mappers: com.smalleast.BaseMapper
+  not-empty: false
+  identity: MYSQL
