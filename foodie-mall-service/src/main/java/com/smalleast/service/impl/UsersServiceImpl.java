@@ -66,4 +66,17 @@ public class UsersServiceImpl implements UsersService {
 
         return user;
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users loginUser(UserBo userBo) {
+        String MD5Pwd = MD5Utils.getMD5(userBo.getPassword());
+        Users user = new Users();
+        user.setUsername(userBo.getUsername());
+        Users result= usersMapper.selectOne(user);
+        if (result != null && MD5Pwd.equals(result.getPassword())) {
+            return result;
+        }
+        return null;
+    }
 }

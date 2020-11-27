@@ -1,11 +1,13 @@
 package org.n3r.idworker;
 
-import org.n3r.idworker.strategy.DefaultWorkerIdStrategy;
 import org.n3r.idworker.utils.Utils;
+import org.n3r.idworker.strategy.DefaultWorkerIdStrategy;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Component
 public class Sid {
     private static WorkerIdStrategy workerIdStrategy;
     private static IdWorker idWorker;

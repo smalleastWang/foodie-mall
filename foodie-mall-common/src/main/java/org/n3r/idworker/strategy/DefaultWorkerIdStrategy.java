@@ -7,6 +7,7 @@ import org.n3r.idworker.utils.Props;
 import org.n3r.idworker.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.security.SecureRandom;
 import java.util.Properties;
 import java.util.Random;
 
+@Component
 public class DefaultWorkerIdStrategy implements WorkerIdStrategy {
     static long workerIdBits = 10L;
     static long maxWorkerId = -1L ^ (-1L << workerIdBits);

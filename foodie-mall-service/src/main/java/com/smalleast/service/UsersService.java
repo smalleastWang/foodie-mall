@@ -17,4 +17,6 @@ public interface UsersService {
      * @return
      */
     public Users createUser(UserBo userBo);
+
+    public Users loginUser(UserBo userBo);
 }

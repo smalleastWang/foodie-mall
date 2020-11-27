@@ -1,7 +1,9 @@
 package org.n3r.idworker;
 
 import org.n3r.idworker.strategy.DayPrefixRandomCodeStrategy;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DayCode {
     static RandomCodeStrategy strategy;
 

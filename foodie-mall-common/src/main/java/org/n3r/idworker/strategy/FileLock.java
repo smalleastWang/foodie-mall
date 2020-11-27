@@ -3,6 +3,7 @@ package org.n3r.idworker.strategy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.channels.Channels;

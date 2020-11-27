@@ -1,10 +1,13 @@
 package org.n3r.idworker.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+@Component
 public class Utils {
 
     public static final String DOT_IDWORKERS = ".idworkers";

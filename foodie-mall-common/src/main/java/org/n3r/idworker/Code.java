@@ -1,7 +1,9 @@
 package org.n3r.idworker;
 
 import org.n3r.idworker.strategy.DefaultRandomCodeStrategy;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Code {
     private static RandomCodeStrategy strategy;
 
