@@ -2,6 +2,7 @@ package org.n3r.idworker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 

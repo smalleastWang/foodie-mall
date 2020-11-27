@@ -1,11 +1,14 @@
 package org.n3r.idworker.utils;
 
+import org.springframework.stereotype.Component;
+
 /**
  * This utility provides methods to either convert an IPv4 address to its long format or a 32bit dotted format.
  *
  * @author Aion
  *         Created on 22/11/12
  */
+@Component
 public class IPv4Utils {
 
     /**

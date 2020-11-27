@@ -3,6 +3,7 @@ package org.n3r.idworker.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -10,6 +11,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+@Component
 public class Ip {
     static Logger logger = LoggerFactory.getLogger(Ip.class);
 

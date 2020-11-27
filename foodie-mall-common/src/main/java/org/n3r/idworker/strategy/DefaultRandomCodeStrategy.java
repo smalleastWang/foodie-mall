@@ -1,10 +1,11 @@
 package org.n3r.idworker.strategy;
 
+import org.n3r.idworker.utils.Utils;
 import org.n3r.idworker.Id;
 import org.n3r.idworker.RandomCodeStrategy;
-import org.n3r.idworker.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Queue;
 
+@Component
 public class DefaultRandomCodeStrategy implements RandomCodeStrategy {
     public static final int MAX_BITS = 1000000;
 

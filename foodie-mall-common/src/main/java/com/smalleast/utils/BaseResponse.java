@@ -1,6 +1,8 @@
 package com.smalleast.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
  **/
 
 @Data
+@ApiModel(value = "")
 public class BaseResponse {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -25,6 +28,7 @@ public class BaseResponse {
      * 500 -> 服务器内部错误
      * 501 -> 参数验证错误
      */
+    @ApiModelProperty(value = "")
     private Integer code = 200;
 
     private String message = "请求成功";
@@ -45,6 +49,11 @@ public class BaseResponse {
     public BaseResponse(Integer code, String message) {
         this.code = code;
         this.message = message;
+    }
+    public BaseResponse(Integer code, String message, Object data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
     }
 
     /**
@@ -88,6 +97,9 @@ public class BaseResponse {
      */
     public static BaseResponse error(String message) {
         return new BaseResponse(400, message);
+    }
+    public static BaseResponse error(String message, Object data) {
+        return new BaseResponse(400, message, data);
     }
 
     /**

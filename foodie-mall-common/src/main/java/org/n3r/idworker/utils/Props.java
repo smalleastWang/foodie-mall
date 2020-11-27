@@ -2,6 +2,7 @@ package org.n3r.idworker.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.Properties;
@@ -9,6 +10,7 @@ import java.util.Properties;
 import static java.io.File.separator;
 import static org.n3r.idworker.utils.Serializes.closeQuietly;
 
+@Component
 public class Props {
     static Logger log = LoggerFactory.getLogger(Props.class);
 
@@ -21,7 +23,7 @@ public class Props {
         } catch (IOException e) {
             log.error("load properties error: {}", e.getMessage());
         } finally {
-            closeQuietly(is);
+            Serializes.closeQuietly(is);
         }
 
         return properties;
