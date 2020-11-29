@@ -54,8 +54,8 @@ public class UsersServiceImpl implements UsersService {
         // 默认头像
         user.setFace(faceUrl);
         // 默认生日
-        user.setBirthday(DateUtils.parseDate("1900-01-01"));
-        Date date = DateUtils.parseDate("1900-01-01");
+        user.setBirthday(DateUtils.stringToDate("1900-01-01"));
+        Date date = DateUtils.stringToDate("1900-01-01");
         // 性别默认保密
         user.setSex(Sex.secret.type);
 

@@ -1,234 +1,651 @@
 package com.smalleast.utils;
 
-
-import org.springframework.util.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-/**
- * 日期工具类
- */
 public class DateUtils {
 
-    public final static String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-
-    public final static String SHORT_TIME_FORMAT = "yyyy-MM-dd HH:mm";
-
-    public final static DateFormat DEFAULT_TIME_FORMATER = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
-
-    public final static DateFormat DEFAULT_DATE_FORMATER = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-
-    public final static DateFormat SHORT_TIME_FORMATER = new SimpleDateFormat(SHORT_TIME_FORMAT);
-
-    private final static Map<String, Integer> CALENDAR = new HashMap<String, Integer>() {{
-        put("y", Calendar.YEAR);
-        put("m", Calendar.MONTH);
-        put("d", Calendar.DATE);
-        put("h", Calendar.HOUR);
-        put("n", Calendar.MINUTE);
-        put("s", Calendar.SECOND);
-        put("ms", Calendar.MILLISECOND);
-    }};
+    /**
+     * Base ISO 8601 Date format yyyyMMdd i.e., 20021225 for the 25th day of December in the year 2002
+     */
+    public static final String ISO_DATE_FORMAT = "yyyyMMdd";
 
     /**
-     * date 转换为 日期字符转 yyyy-MM-dd
-     *
-     * @param date
-     * @return
+     * Expanded ISO 8601 Date format yyyy-MM-dd i.e., 2002-12-25 for the 25th day of December in the year 2002
      */
-    public static String formatDate(Date date) {
-        if (date == null) {
-            return "";
+    public static final String ISO_EXPANDED_DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * yyyy-MM-dd hh:mm:ss
+     */
+    public static String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static String DATE_PATTERN = "yyyyMMddHHmmss";
+
+    /**
+     * 则个
+     */
+    private static boolean LENIENT_DATE = false;
+
+
+    private static Random random = new Random();
+    private static final int ID_BYTES = 10;
+
+    public synchronized static String generateId() {
+        StringBuffer result = new StringBuffer();
+        result = result.append(System.currentTimeMillis());
+        for (int i = 0; i < ID_BYTES; i++) {
+            result = result.append(random.nextInt(10));
         }
-        return DEFAULT_DATE_FORMATER.format(date);
+        return result.toString();
+    }
+
+    protected static final float normalizedJulian(float jd) {
+
+        float f = Math.round(jd + 0.5f) - 0.5f;
+
+        return f;
     }
 
     /**
-     * date 根据指定格式进行转换
+     * Returns the Date from a julian. The Julian date will be converted to noon GMT,
+     * such that it matches the nearest half-integer (i.e., a julian date of 1.4 gets
+     * changed to 1.5, and 0.9 gets changed to 0.5.)
      *
+     * @param jd the Julian date
+     * @return the Gregorian date
+     */
+    public static final Date toDate(float jd) {
+
+        /* To convert a Julian Day Number to a Gregorian date, assume that it is for 0 hours, Greenwich time (so
+         * that it ends in 0.5). Do the following calculations, again dropping the fractional part of all
+         * multiplicatons and divisions. Note: This method will not give dates accurately on the
+         * Gregorian Proleptic Calendar, i.e., the calendar you get by extending the Gregorian
+         * calendar backwards to years earlier than 1582. using the Gregorian leap year
+         * rules. In particular, the method fails if Y<400. */
+        float Z = (normalizedJulian(jd)) + 0.5f;
+        float W = (int) ((Z - 1867216.25f) / 36524.25f);
+        float X = (int) (W / 4f);
+        float A = Z + 1 + W - X;
+        float B = A + 1524;
+        float C = (int) ((B - 122.1) / 365.25);
+        float D = (int) (365.25f * C);
+        float E = (int) ((B - D) / 30.6001);
+        float F = (int) (30.6001f * E);
+        int day = (int) (B - D - F);
+        int month = (int) (E - 1);
+
+        if (month > 12) {
+            month = month - 12;
+        }
+
+        //(if Month is January or February) or C-4716 (otherwise)
+        int year = (int) (C - 4715);
+
+        if (month > 2) {
+            year--;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        // damn 0 offsets
+        c.set(Calendar.MONTH, month - 1);
+        c.set(Calendar.DATE, day);
+
+        return c.getTime();
+    }
+
+    /**
+     * Returns the days between two dates. Positive values indicate that
+     * the second date is after the first, and negative values indicate, well,
+     * the opposite. Relying on specific times is problematic.
+     *
+     * @param early the "first date"
+     * @param late the "second date"
+     * @return the days between the two dates
+     */
+    public static final int daysBetween(Date early, Date late) {
+
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(early);
+        c2.setTime(late);
+
+        return daysBetween(c1, c2);
+    }
+
+    /**
+     * Returns the days between two dates. Positive values indicate that
+     * the second date is after the first, and negative values indicate, well,
+     * the opposite.
+     *
+     * @param early
+     * @param late
+     * @return the days between two dates.
+     */
+    public static final int daysBetween(Calendar early, Calendar late) {
+
+        return (int) (toJulian(late) - toJulian(early));
+    }
+
+    /**
+     * Return a Julian date based on the input parameter. This is
+     * based from calculations found at
+     * <a href="http://quasar.as.utexas.edu/BillInfo/JulianDatesG.html">Julian Day Calculations
+     * (Gregorian Calendar)</a>, provided by Bill Jeffrys.
+     * @param c a calendar instance
+     * @return the julian day number
+     */
+    public static final float toJulian(Calendar c) {
+
+        int Y = c.get(Calendar.YEAR);
+        int M = c.get(Calendar.MONTH);
+        int D = c.get(Calendar.DATE);
+        int A = Y / 100;
+        int B = A / 4;
+        int C = 2 - A + B;
+        float E = (int) (365.25f * (Y + 4716));
+        float F = (int) (30.6001f * (M + 1));
+        float jd = C + D + E + F - 1524.5f;
+
+        return jd;
+    }
+
+    /**
+     * Return a Julian date based on the input parameter. This is
+     * based from calculations found at
+     * <a href="http://quasar.as.utexas.edu/BillInfo/JulianDatesG.html">Julian Day Calculations
+     * (Gregorian Calendar)</a>, provided by Bill Jeffrys.
      * @param date
+     * @return the julian day number
+     */
+    public static final float toJulian(Date date) {
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+
+        return toJulian(c);
+    }
+
+    /**
+     * @param isoString
+     * @param fmt
+     * @param field   Calendar.YEAR/Calendar.MONTH/Calendar.DATE
+     * @param amount
+     * @return
+     * @throws ParseException
+     */
+    public static final String dateIncrease(String isoString, String fmt,
+                                            int field, int amount) {
+
+        try {
+            Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone(
+                    "GMT"));
+            cal.setTime(stringToDate(isoString, fmt, true));
+            cal.add(field, amount);
+
+            return dateToString(cal.getTime(), fmt);
+
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Time Field Rolling function.
+     * Rolls (up/down) a single unit of time on the given time field.
+     *
+     * @param isoString
+     * @param field the time field.
+     * @param up Indicates if rolling up or rolling down the field value.
+     * @exception ParseException if an unknown field value is given.
+     */
+    public static final String roll(String isoString, String fmt, int field,
+                                    boolean up) throws ParseException {
+
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone(
+                "GMT"));
+        cal.setTime(stringToDate(isoString, fmt));
+        cal.roll(field, up);
+
+        return dateToString(cal.getTime(), fmt);
+    }
+
+    /**
+     * Time Field Rolling function.
+     * Rolls (up/down) a single unit of time on the given time field.
+     *
+     * @param isoString
+     * @param field the time field.
+     * @param up Indicates if rolling up or rolling down the field value.
+     * @exception ParseException if an unknown field value is given.
+     */
+    public static final String roll(String isoString, int field, boolean up) throws
+            ParseException {
+
+        return roll(isoString, DATETIME_PATTERN, field, up);
+    }
+
+    /**
+     *  java.util.Date
+     * @param dateText
+     * @param format
+     * @param lenient
+     * @return
+     */
+    public static Date stringToDate(String dateText, String format,
+                                    boolean lenient) {
+
+        if (dateText == null) {
+
+            return null;
+        }
+
+        DateFormat df = null;
+
+        try {
+
+            if (format == null) {
+                df = new SimpleDateFormat();
+            } else {
+                df = new SimpleDateFormat(format);
+            }
+
+            // setLenient avoids allowing dates like 9/32/2001
+            // which would otherwise parse to 10/2/2001
+            df.setLenient(false);
+
+            return df.parse(dateText);
+        } catch (ParseException e) {
+
+            return null;
+        }
+    }
+
+    /**
+     * @return Timestamp
+     */
+    public static java.sql.Timestamp getCurrentTimestamp() {
+        return new java.sql.Timestamp(System.currentTimeMillis());
+    }
+
+    /** java.util.Date
      * @param format
      * @return
      */
-    public static String formatDate(Date date, String format) {
-        if (date == null) {
-            return null;
-        }
-        return new SimpleDateFormat(format).format(date);
+    public static Date stringToDate(String dateString, String format) {
+
+        return stringToDate(dateString, format, LENIENT_DATE);
     }
 
     /**
-     * Date 转 字符串 yyyy-MM-dd HH:mm
-     *
+     * java.util.Date
+     */
+    public static Date stringToDate(String dateString) {
+        return stringToDate(dateString, ISO_EXPANDED_DATE_FORMAT, LENIENT_DATE);
+    }
+
+    /**
+     * @return
+     * @param pattern
      * @param date
-     * @return
      */
-    public static String formatShortTime(Date date) {
+    public static String dateToString(Date date, String pattern) {
+
         if (date == null) {
+
             return null;
         }
-        return SHORT_TIME_FORMATER.format(date);
-    }
 
-    /**
-     * date 转换为 日期字符转 yyyy-MM-dd HH:mm:ss
-     *
-     * @param date
-     * @return
-     */
-    public static String formatTime(Date date) {
-        if (date == null) {
-            return null;
-        }
-        return DEFAULT_TIME_FORMATER.format(date);
-    }
-
-    /**
-     * 获取当前字符串日期  yyyy-MM-dd
-     *
-     * @return
-     */
-    public static String formatDateNow() {
-        return formatDate(new Date());
-    }
-
-    /**
-     * 获取当前字符串日期  yyyy-MM-dd HH:mm:ss
-     *
-     * @return
-     */
-    public static String formatTimeNow() {
-        return formatTime(new Date());
-    }
-
-    /**
-     * 字符串 转 Date
-     *
-     * @param date
-     * @param df   需要转换的格式
-     * @return
-     */
-    public static Date parseDate(String date, DateFormat df) {
-        if (date == null) {
-            return null;
-        }
         try {
-            return df.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    /**
-     * 字符串 转 Date
-     *
-     * @param date
-     * @param df   需要转换的格式
-     * @return
-     */
-    public static Date parseTime(String date, DateFormat df) {
-        if (date == null) {
+            SimpleDateFormat sfDate = new SimpleDateFormat(pattern);
+            sfDate.setLenient(false);
+
+            return sfDate.format(date);
+        } catch (Exception e) {
+
             return null;
         }
-        try {
-            return df.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
-     * 字符串 转 Date 格式为：yyyy-MM-dd
-     *
+     * yyyy-MM-dd
      * @param date
      * @return
      */
-    public static Date parseDate(String date) {
-        return parseDate(date, DEFAULT_DATE_FORMATER);
+    public static String dateToString(Date date) {
+        return dateToString(date, ISO_EXPANDED_DATE_FORMAT);
     }
 
     /**
-     * 字符串 转 Date 格式为自定义
-     *
-     * @param date
-     * @param format
      * @return
      */
-    public static Date parseDate(String date, String format) {
-        if (ObjectUtils.isEmpty(date)) {
-            return null;
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-        try {
-            return dateFormat.parse(date);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+    public static Date getCurrentDateTime() {
+        Calendar calNow = Calendar.getInstance();
+        Date dtNow = calNow.getTime();
+
+        return dtNow;
     }
 
     /**
-     * 对日期的加减 神操作
      *
-     * @param date     日期
-     * @param interval 指定操作类型
-     * @param number   加减的范围
-     * @param format   需要转换的格式 可以是字符串 也可以是 SimpleDateFormat 类型
-     * @param isDate   指定返回类型可选参数 yes 代表返回Date类型
-     * @return String || Date
+     * @param pattern
+     * @return
      */
-    public static Object DatePeration(Object date, String interval, Integer number, Object format, String... isDate) {
+    public static String getCurrentDateString(String pattern) {
+        return dateToString(getCurrentDateTime(), pattern);
+    }
+
+    /**
+     *   yyyy-MM-dd
+     * @return
+     */
+    public static String getCurrentDateString() {
+        return dateToString(getCurrentDateTime(), ISO_EXPANDED_DATE_FORMAT);
+    }
+
+    /**
+     * 返回固定格式的当前时间
+     *   yyyy-MM-dd hh:mm:ss
+     * @return
+     */
+    public static String dateToStringWithTime( ) {
+
+        return dateToString(new Date(), DATETIME_PATTERN);
+    }
+
+
+    /**
+     *   yyyy-MM-dd hh:mm:ss
+     * @param date
+     * @return
+     */
+    public static String dateToStringWithTime(Date date) {
+
+        return dateToString(date, DATETIME_PATTERN);
+    }
+
+    /**
+     *
+     * @param date
+     * @param days
+     * @return java.util.Date
+     */
+    public static Date dateIncreaseByDay(Date date, int days) {
+
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone(
+                "GMT"));
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+
+        return cal.getTime();
+    }
+
+    /**
+     *
+     * @param date
+     * @return java.util.Date
+     */
+    public static Date dateIncreaseByMonth(Date date, int mnt) {
+
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone(
+                "GMT"));
+        cal.setTime(date);
+        cal.add(Calendar.MONTH, mnt);
+
+        return cal.getTime();
+    }
+
+    /**
+     *
+     * @param date
+     * @param mnt
+     * @return java.util.Date
+     */
+    public static Date dateIncreaseByYear(Date date, int mnt) {
+
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone(
+                "GMT"));
+        cal.setTime(date);
+        cal.add(Calendar.YEAR, mnt);
+
+        return cal.getTime();
+    }
+
+    /**
+     *
+     * @param date   yyyy-MM-dd
+     * @param days
+     * @return  yyyy-MM-dd
+     */
+    public static String dateIncreaseByDay(String date, int days) {
+        return dateIncreaseByDay(date, ISO_DATE_FORMAT, days);
+    }
+
+    /**
+     * @param date
+     * @param fmt
+     * @param days
+     * @return
+     */
+    public static String dateIncreaseByDay(String date, String fmt, int days) {
+        return dateIncrease(date, fmt, Calendar.DATE, days);
+    }
+
+    /**
+     *
+     * @param src
+     * @param srcfmt
+     * @param desfmt
+     * @return
+     */
+    public static String stringToString(String src, String srcfmt,
+                                        String desfmt) {
+        return dateToString(stringToDate(src, srcfmt), desfmt);
+    }
+
+    /**
+     *
+     * @param date
+     * @return string
+     */
+    public static String getYear(Date date) {
+        SimpleDateFormat formater = new SimpleDateFormat(
+                "yyyy");
+        String curYear = formater.format(date);
+        return curYear;
+    }
+
+    /**
+     *
+     * @param date
+     * @return string
+     */
+    public static String getMonth(Date date) {
+        SimpleDateFormat formater = new SimpleDateFormat(
+                "MM");
+        String curMonth = formater.format(date);
+        return curMonth;
+    }
+
+    /**
+     * @param date
+     * @return string
+     */
+    public static String getDay(Date date) {
+        SimpleDateFormat formater = new SimpleDateFormat(
+                "dd");
+        String curDay = formater.format(date);
+        return curDay;
+    }
+
+    public static int getDayInt(Date date) {
+        SimpleDateFormat formater = new SimpleDateFormat(
+                "dd");
+        String curDay = formater.format(date);
+        return Integer.valueOf(curDay);
+    }
+
+    /**
+     * @param date
+     * @return string
+     */
+    public static String getHour(Date date) {
+        SimpleDateFormat formater = new SimpleDateFormat(
+                "HH");
+        String curDay = formater.format(date);
+        return curDay;
+    }
+
+    public static int getMinsFromDate(Date dt) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(dt);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min = cal.get(Calendar.MINUTE);
+        return ((hour * 60) + min);
+    }
+
+    /**
+     * Function to convert String to Date Object. If invalid input then current or next day date
+     * is returned (Added by Ali Naqvi on 2006-5-16).
+     * @param str String input in YYYY-MM-DD HH:MM[:SS] format.
+     * @param isExpiry boolean if set and input string is invalid then next day date is returned
+     * @return Date
+     */
+    public static Date convertToDate(String str, boolean isExpiry) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date dt = null;
         try {
-            Date newDate = null;
-            String temporaryDate = null;
-            if (format instanceof SimpleDateFormat) {
-                if (date instanceof Date) {
-                    newDate = parseDate(((SimpleDateFormat) format).format(date), ((SimpleDateFormat) format));
-                }
-                if (date instanceof String) {
-                    newDate = parseDate((String) date, (SimpleDateFormat) format);
-                }
+            dt = fmt.parse(str);
+        } catch (ParseException ex) {
+            Calendar cal = Calendar.getInstance();
+            if (isExpiry) {
+                cal.add(Calendar.DAY_OF_MONTH, 1);
+                cal.set(Calendar.HOUR_OF_DAY, 23);
+                cal.set(Calendar.MINUTE, 59);
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
             }
-            if (format instanceof String) {
-                if (date instanceof Date) {
-                    newDate = parseDate(new SimpleDateFormat((String) format).format(date), (String) format);
+            dt = cal.getTime();
+        }
+        return dt;
+    }
+
+    public static Date convertToDate(String str) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        Date dt = null;
+        try {
+            dt = fmt.parse(str);
+        } catch (ParseException ex) {
+            dt = new Date();
+        }
+        return dt;
+    }
+
+    public static String dateFromat(Date date, int minute) {
+        String dateFormat = null;
+        int year = Integer.parseInt(getYear(date));
+        int month = Integer.parseInt(getMonth(date));
+        int day = Integer.parseInt(getDay(date));
+        int hour = minute / 60;
+        int min = minute % 60;
+        dateFormat = String.valueOf(year)
+                +
+                (month > 9 ? String.valueOf(month) :
+                        "0" + String.valueOf(month))
+                +
+                (day > 9 ? String.valueOf(day) : "0" + String.valueOf(day))
+                + " "
+                +
+                (hour > 9 ? String.valueOf(hour) : "0" + String.valueOf(hour))
+                +
+                (min > 9 ? String.valueOf(min) : "0" + String.valueOf(min))
+                + "00";
+        return dateFormat;
+    }
+
+    public static String sDateFormat() {
+        return new SimpleDateFormat(DATE_PATTERN).format(Calendar.getInstance().getTime());
+    }
+
+    /**
+     *
+     * @Description: 获得本月的第一天日期
+     * @return
+     *
+     * @author leechenxiang
+     * @date 2017年5月31日 下午1:37:34
+     */
+    public static String getFirstDateOfThisMonth() {
+
+        SimpleDateFormat format = new SimpleDateFormat(ISO_EXPANDED_DATE_FORMAT);
+
+        Calendar calendarFirst = Calendar.getInstance();
+        calendarFirst = Calendar.getInstance();
+        calendarFirst.add(Calendar.MONTH, 0);
+        calendarFirst.set(Calendar.DAY_OF_MONTH, 1);
+        String firstDate = format.format(calendarFirst.getTime());
+
+        return firstDate;
+    }
+
+    /**
+     *
+     * @Description: 获得本月的最后一天日期
+     * @return
+     *
+     * @author leechenxiang
+     * @date 2017年5月31日 下午1:37:50
+     */
+    public static String getLastDateOfThisMonth() {
+        SimpleDateFormat format = new SimpleDateFormat(ISO_EXPANDED_DATE_FORMAT);
+
+        Calendar calendarLast = Calendar.getInstance();
+        calendarLast.setTime(new Date());
+        calendarLast.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        String lastDate = format.format(calendarLast.getTime());
+        return lastDate;
+    }
+
+    /**
+     * @Description: 判断字符串日期是否匹配指定的格式化日期
+     */
+    public static boolean isValidDate(String strDate, String formatter) {
+        SimpleDateFormat sdf = null;
+        ParsePosition pos = new ParsePosition(0);
+
+        if (StringUtils.isBlank(strDate) || StringUtils.isBlank(formatter)) {
+            return false;
+        }
+        try {
+            sdf = new SimpleDateFormat(formatter);
+            sdf.setLenient(false);
+            Date date = sdf.parse(strDate, pos);
+            if (date == null) {
+                return false;
+            } else {
+                if (pos.getIndex() > sdf.format(date).length()) {
+                    return false;
                 }
-                if (date instanceof String) {
-                    newDate = parseDate((String) date, (String) format);
-                }
-            }
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(newDate);
-            calendar.add(CALENDAR.get(interval), number);
-            newDate = calendar.getTime();
-            if (!ObjectUtils.isEmpty(isDate)) {
-                return newDate;
-            }
-            if (format instanceof String) {
-                return new SimpleDateFormat((String) format).format(newDate);
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return "";
     }
 
-    public static void main(String[] args) {
-
-        System.out.println(DatePeration("2019-11-05 18:00:00", "y", 1, "yyyy-MM-dd HH:mm:ss"));
-        System.out.println(DatePeration(new Date(), "y", 1, "yyyy-MM-dd"));
-        System.out.println(DatePeration("2019-11-05 18:00:00", "y", 1, DateUtils.DEFAULT_TIME_FORMAT));
-        System.out.println(DatePeration(new Date(), "y", 1, DateUtils.DEFAULT_TIME_FORMAT));
-        System.out.println(DatePeration(new Date(), "m", 1, DateUtils.DEFAULT_TIME_FORMAT));
-
+    public static void main(String[] args)
+    {
+        boolean flag = DateUtils.isValidDate("1990-10-32", DateUtils.ISO_EXPANDED_DATE_FORMAT);
+        System.out.println(flag);
     }
-
 
 }

@@ -1,1 +1,2 @@
-com/smalleast/config/SwaggerConfig.class
+com\smalleast\config\CorsConfig.class
+com\smalleast\config\SwaggerConfig.class

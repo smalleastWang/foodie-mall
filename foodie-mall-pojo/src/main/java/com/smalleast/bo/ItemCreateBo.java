@@ -20,27 +20,27 @@ import javax.validation.constraints.NotEmpty;
 public class ItemCreateBo {
 
     @NotEmpty
-    @ApiModelProperty(value = "商品名称", name = "商品名称")
+    @ApiModelProperty(value = "商品名称", name = "商品名称", required = true)
     private String itemName;
 
     @NotEmpty
-    @ApiModelProperty(value = "分类外键ID", name = "分类外键ID")
+    @ApiModelProperty(value = "分类外键ID", name = "分类外键ID", required = true)
     private String catId;
 
     @NotEmpty
-    @ApiModelProperty(value = "一级分类外键ID", name = "一级分类外键ID")
+    @ApiModelProperty(value = "一级分类外键ID", name = "一级分类外键ID", required = true)
     private String rootCatId;
 
     @NotEmpty
-    @ApiModelProperty(value = "累计销售", name = "累计销售")
+    @ApiModelProperty(value = "累计销售", name = "累计销售", required = true)
     private String sellCount;
 
     @NotEmpty
-    @ApiModelProperty(value = "上下架状态", name = "上下架状态")
+    @ApiModelProperty(value = "上下架状态", name = "上下架状态", required = true)
     private String onOffStatus;
 
     @NotEmpty
-    @ApiModelProperty(value = "商品内容", name = "商品内容")
+    @ApiModelProperty(value = "商品内容", name = "商品内容", required = true)
     private String content;
 
 

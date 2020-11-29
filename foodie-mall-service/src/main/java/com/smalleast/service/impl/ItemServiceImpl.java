@@ -8,6 +8,8 @@ import com.smalleast.service.ItemService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -29,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     @Resource
     private Sid sid;
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public List<Items> queryItems(ItemSearchBo itemSearchBo) {
         Items items = new Items();
@@ -37,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
         return itemsMapper.select(items);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Items createItem(ItemCreateBo itemCreateBo) {
         Items items = new Items();

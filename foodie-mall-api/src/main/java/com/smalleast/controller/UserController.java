@@ -4,7 +4,8 @@ import com.smalleast.bo.UserBo;
 import com.smalleast.pojo.Users;
 import com.smalleast.utils.BaseResponse;
 import com.smalleast.service.UsersService;
-import com.sun.istack.internal.NotNull;
+import com.smalleast.utils.CookieUtils;
+import com.smalleast.utils.JsonUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 
 /**
  * @Author : wangxiaodong
@@ -46,17 +48,21 @@ public class UserController {
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping("/login")
-    public BaseResponse login(@RequestBody @Validated UserBo userBo) {
+    public BaseResponse login(@RequestBody @Validated UserBo userBo, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         boolean isExist = usersService.queryUserNameIsExist(userBo.getUsername());
-        if (!isExist)
-            return BaseResponse.error("用户名不存在");
+        if (!isExist) return BaseResponse.error("用户名不存在");
 
-        Users user =  usersService.loginUser(userBo);
-        if (user == null)
-            return BaseResponse.error("用户名或密码错误");
+        Users result =  usersService.loginUser(userBo);
+        if (result == null) return BaseResponse.error("用户名或密码错误");
 
-        return BaseResponse.success(user, "登录成功");
+        result = setNUllProperty(result);
+
+        // 设置登录信息
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(result), true);
+
+        return BaseResponse.success(result, "登录成功");
+
     }
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
@@ -81,8 +87,26 @@ public class UserController {
     }
 
     @ApiOperation(value = "退出登录", notes = "退出登录")
-    @GetMapping("/logout")
-    public BaseResponse logout(@RequestParam String userId, HttpServletRequest req, HttpServletResponse res) {
+    @PostMapping("/logout")
+    public BaseResponse logout(@RequestParam @NotNull String userId, HttpServletRequest request, HttpServletResponse response) {
+        // 清除cookie
+        CookieUtils.deleteCookie(request, response, "user");
+
         return BaseResponse.success();
+    }
+
+    /**
+     * 设置空属性
+     * @param userResult
+     * @return
+     */
+    private Users setNUllProperty(Users userResult) {
+        userResult.setPassword(null);
+        userResult.setMobile(null);
+        userResult.setEmail(null);
+        userResult.setCreateTime(null);
+        userResult.setUpdatedTime(null);
+        userResult.setBirthday(null);
+        return userResult;
     }
 }
