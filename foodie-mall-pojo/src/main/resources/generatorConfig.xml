@@ -11,7 +11,7 @@
         <property name="endingDelimiter" value="`"/>
         <!-- 通用mapper目录 -->
         <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-            <property name="mappers" value="MyMapper"/>
+            <property name="mappers" value="BaseMapper"/>
         </plugin>
         <!-- optional，旨在创建class时，对注释进行控制 -->
         <commentGenerator>
