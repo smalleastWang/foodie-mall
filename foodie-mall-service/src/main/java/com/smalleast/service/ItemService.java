@@ -27,4 +27,12 @@ public interface ItemService {
      * @return  items
      */
     public Items createItem(ItemCreateBo ItemCreateBo);
+
+    /**
+     * 查询首页分类推荐商品
+     * @param rootCategoryId
+     * @return
+     */
+    List<Items> queryItemsByCategory(Integer rootCategoryId);
+
 }

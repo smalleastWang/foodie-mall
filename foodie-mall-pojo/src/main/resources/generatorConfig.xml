@@ -54,7 +54,7 @@
 <!--            <generatedKey column="ID" sqlStatement="select uuid_short()" identity="false"/>-->
         </table>
         <!-- 轮播图 -->
-        <table tableName="carouse" domainObjectName="Carouse">
+        <table tableName="carousel" domainObjectName="Carousel">
             <generatedKey column="ID" sqlStatement="select uuid_short()" identity="false"/>
         </table>
         <!-- 轮播图 -->

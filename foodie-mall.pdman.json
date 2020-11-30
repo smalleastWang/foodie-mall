@@ -5,7 +5,7 @@
       "chnname": "吃货商城",
       "entities": [
         {
-          "title": "carouse",
+          "title": "carousel",
           "fields": [
             {
               "name": "id",
