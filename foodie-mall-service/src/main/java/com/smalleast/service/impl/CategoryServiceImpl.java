@@ -2,14 +2,10 @@ package com.smalleast.service.impl;
 
 import com.smalleast.enums.CategoryType;
 import com.smalleast.mapper.CategoryMapper;
-import com.smalleast.pojo.Carousel;
 import com.smalleast.pojo.Category;
 import com.smalleast.service.CategoryService;
 import com.smalleast.vo.SecondLevelCategoryVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;

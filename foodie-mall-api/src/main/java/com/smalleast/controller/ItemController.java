@@ -30,17 +30,25 @@ public class ItemController {
     ItemService itemService;
 
     @ApiOperation(value = "商品列表接口", notes = "商品列表接口")
-    @GetMapping("list")
-    public BaseResponse getList(@RequestBody @Validated ItemSearchBo itemSearchBo) {
+    @GetMapping("/list")
+    public BaseResponse queryList(@RequestBody @Validated ItemSearchBo itemSearchBo) {
         // if (itemBo)
         List<Items> result = itemService.queryItems(itemSearchBo);
         return BaseResponse.success(result);
     }
 
+    @ApiOperation(value = "商品详情接口", notes = "商品详情接口")
+    @GetMapping("/detail/{id}")
+    public BaseResponse queryDetail(@PathVariable String id) {
+        Items result = itemService.queryItemDetail(id);
+        return BaseResponse.success(result);
+    }
+
     @ApiOperation(value = "创建商品接口", notes = "商品列表接口")
-    @PostMapping("create")
+    @PostMapping("/create")
     public BaseResponse createItem(@RequestBody @Validated ItemCreateBo itemCreateBo) {
         Items result = itemService.createItem(itemCreateBo);
         return BaseResponse.success(result);
     }
+
 }

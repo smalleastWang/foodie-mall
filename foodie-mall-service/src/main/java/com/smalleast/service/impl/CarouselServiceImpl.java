@@ -4,8 +4,6 @@ import com.smalleast.mapper.CarouselMapper;
 import com.smalleast.pojo.Carousel;
 import com.smalleast.service.CarouselService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
@@ -24,7 +22,5 @@ public class CarouselServiceImpl implements CarouselService {
         criteria.andEqualTo("isShow", isShow);
         List<Carousel> result = carouselMapper.selectByExample(example);
         return result;
-        // return null;
     }
-
 }

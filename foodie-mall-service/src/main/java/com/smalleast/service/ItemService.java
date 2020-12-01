@@ -35,4 +35,11 @@ public interface ItemService {
      */
     List<Items> queryItemsByCategory(Integer rootCategoryId);
 
+    /**
+     * 查询商品详情
+     * @param id
+     * @return
+     */
+    Items queryItemDetail(String id);
+
 }

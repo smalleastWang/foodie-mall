@@ -15,4 +15,8 @@
     <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
+
+  <select id="queryItemById" resultMap="BaseResultMap" parameterType="string">
+    SELECT * FROM items WHERE id = #{id}
+  </select>
 </mapper>

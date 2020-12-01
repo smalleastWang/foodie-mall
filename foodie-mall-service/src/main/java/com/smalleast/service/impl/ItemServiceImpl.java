@@ -2,7 +2,6 @@ package com.smalleast.service.impl;
 
 import com.smalleast.bo.ItemCreateBo;
 import com.smalleast.bo.ItemSearchBo;
-import com.smalleast.enums.CategoryType;
 import com.smalleast.mapper.ItemsMapper;
 import com.smalleast.pojo.Category;
 import com.smalleast.pojo.Items;
@@ -65,6 +64,11 @@ public class ItemServiceImpl implements ItemService {
         criteria.andEqualTo("root_cat_id", rootCategoryId);
         List<Items> result = itemsMapper.selectByExample(example);
         return result;
+    }
+
+    @Override
+    public Items queryItemDetail(String id) {
+        return itemsMapper.queryItemById(id);
     }
 
 }

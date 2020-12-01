@@ -37,10 +37,10 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("foodie-mall 接口文档")
-                .contact(new Contact("foodie-mall", "https://baidu.com", "smalleast666@gmail.com")) // 联系人信息
+                .contact(new Contact("foodie-mall", "https://smalleast.cn", "smalleast666@gmail.com")) // 联系人信息
                 .description("foodie-mall 接口文档 desc")
                 .version("v1.0.1")
-                .termsOfServiceUrl("https://baidu.com")
+                .termsOfServiceUrl("https://smalleast.cn")
                 .build();
     }
 }
