@@ -30,9 +30,6 @@ public class ItemServiceImpl implements ItemService {
     @Resource
     ItemsMapper itemsMapper;
 
-    @Resource
-    private Sid sid;
-
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public List<Items> queryItems(ItemSearchBo itemSearchBo) {
@@ -50,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
         // 拷贝类
         BeanUtils.copyProperties(itemCreateBo, items);
         // 设置 ID
-        items.setId(sid.nextShort());
+        items.setId(Sid.nextShort());
         items.setCreateTime(new Date());
         items.setUpdatedTime(new Date());
         itemsMapper.insert(items);

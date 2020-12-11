@@ -8,7 +8,7 @@ public interface CarouselService {
     /**
      * 查询轮播图
      * @param isShow
-     * @return
+     * @return Carousel[]
      */
     public List<Carousel> queryAll(Integer isShow);
 }
