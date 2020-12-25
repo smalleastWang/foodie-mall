@@ -20,7 +20,6 @@ public class CarouselServiceImpl implements CarouselService {
         example.orderBy("sort").desc(); // .asc() 正序 desc() 倒序
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("isShow", isShow);
-        List<Carousel> result = carouselMapper.selectByExample(example);
-        return result;
+        return carouselMapper.selectByExample(example);
     }
 }
